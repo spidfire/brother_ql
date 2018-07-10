@@ -47,7 +47,7 @@ RESP_ERROR_INFORMATION_1_DEF = {
   4: 'Main unit in use (QL-560/650TD/1050)',
   5: 'Printer turned off',
   6: 'High-voltage adapter (not used)',
-  7: 'Fan doesn’t work (QL-1050/1060N)',
+  7: 'Fan doesn\'t work (QL-1050/1060N)',
 }
 
 RESP_ERROR_INFORMATION_2_DEF = {
@@ -155,10 +155,10 @@ def interpret_response(data):
     assert len(data) >= 32
     assert data.startswith(b'\x80\x20\x42')
     for i, byte_name in enumerate(RESP_BYTE_NAMES):
-        logger.debug('Byte %2d %24s %02X', i, byte_name+':', data[i])
+        logger.debug('Byte %2d %24s %02X', i, byte_name+':', ord(data[i]))
     errors = []
-    error_info_1 = data[8]
-    error_info_2 = data[9]
+    error_info_1 = ord(data[8])
+    error_info_2 = ord(data[9])
     for error_bit in RESP_ERROR_INFORMATION_1_DEF:
         if error_info_1 & (1 << error_bit):
             logger.error('Error: ' + RESP_ERROR_INFORMATION_1_DEF[error_bit])
@@ -168,24 +168,24 @@ def interpret_response(data):
             logger.error('Error: ' + RESP_ERROR_INFORMATION_2_DEF[error_bit])
             errors.append(RESP_ERROR_INFORMATION_2_DEF[error_bit])
 
-    media_width  = data[10]
-    media_length = data[17]
+    media_width  = ord(data[10])
+    media_length = ord(data[17])
 
-    media_type = data[11]
+    media_type = ord(data[11])
     if media_type in RESP_MEDIA_TYPES:
         media_type = RESP_MEDIA_TYPES[media_type]
         logger.debug("Media type: %s", media_type)
     else:
         logger.error("Unknown media type %02X", media_type)
 
-    status_type = data[18]
+    status_type = ord(data[18])
     if status_type in RESP_STATUS_TYPES:
         status_type = RESP_STATUS_TYPES[status_type]
         logger.debug("Status type: %s", status_type)
     else:
         logger.error("Unknown status type %02X", status_type)
 
-    phase_type = data[19]
+    phase_type = ord(data[19])
     if phase_type in RESP_PHASE_TYPES:
         phase_type = RESP_PHASE_TYPES[phase_type]
         logger.debug("Phase type: %s", phase_type)
